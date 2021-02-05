@@ -66,7 +66,7 @@ const onRequest = (request, response) => {
   console.log("pathname=", pathname);
 
 
-  if (pathname == "/random-number") {
+  if (pathname == "/random-joke") {
     response.writeHead(200, {'Content-Type': 'application/json'}); // Send response headers
     response.write(getRandomJokeJSON());
     response.end();
