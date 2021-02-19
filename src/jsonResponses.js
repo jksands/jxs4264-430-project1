@@ -1,4 +1,6 @@
-const jokes = [
+const _ = require('underscore');
+
+let jokes = [
   { q: 'What do you call a very small valentine?', a: 'A valen-tiny?' },
   { q: 'What did the dog say when he rubbed his tail on the sandpaper?', a: 'Ruff, Ruff?' },
   { q: "Why don't sharks like to eat clowns?", a: 'Because they taste funny?' },
@@ -19,19 +21,33 @@ const jokes = [
 
 // 6 - this will return a random number no bigger than `max`, as a string
 // we will also doing our query parameter validation here
-const getRandomJoke = () => {
-  const i = Math.trunc(Math.random() * jokes.length);
-  const responseObj = {
-    q: jokes[i].q,
-    a: jokes[i].a,
-  };
+const getRandomJokes = (amount = 1) => {
+  let limit = Number(amount);
+  limit = !limit ? 1 : limit;
+  limit = limit < 1 ? 1 : limit;
+  limit = limit > jokes.length ? jokes.length : limit;
+  jokes = _.shuffle(jokes);
+  const responseObj = [];
+  for (let i = 0; i < limit; i += 1) {
+    responseObj[i] = {
+      q: jokes[i].q,
+      a: jokes[i].a,
+    };
+  }
   return JSON.stringify(responseObj);
 };
 
 const getRandomJokeResponse = (request, response) => {
   response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
-  response.write(getRandomJoke());
+  response.write(getRandomJokes());
+  response.end();
+};
+
+const getRandomJokesResponse = (request, response, params) => {
+  response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
+  response.write(getRandomJokes(params.limit));
   response.end();
 };
 
 module.exports.getRandomJokeResponse = getRandomJokeResponse;
+module.exports.getRandomJokesResponse = getRandomJokesResponse;
