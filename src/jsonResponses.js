@@ -23,6 +23,7 @@ let jokes = [
 // we will also doing our query parameter validation here
 const getRandomJokes = (amount = 1) => {
   let limit = Number(amount);
+  limit = Math.floor(limit);
   limit = !limit ? 1 : limit;
   limit = limit < 1 ? 1 : limit;
   limit = limit > jokes.length ? jokes.length : limit;
