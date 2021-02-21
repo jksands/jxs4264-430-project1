@@ -35,20 +35,32 @@ const getRandomJokes = (amount = 1) => {
       a: jokes[i].a,
     };
   }
-  return JSON.stringify(responseObj);
+  // I'll just return the object here and then parse it accordingly
+  // in getRandomJokesResponse
+  return responseObj;
 };
 
-const getRandomJokeResponse = (request, response) => {
-  response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
-  response.write(getRandomJokes());
-  response.end();
+const getRandomJokesResponse = (request, response, params, acceptedTypes) => {
+  const responseObj = getRandomJokes(params.limit);
+  if (acceptedTypes.includes('text/xml')) {
+    let responseString = '<jokes>';
+    for (let i = 0; i < responseObj.length; i += 1) {
+      responseString += `
+        <joke>
+          <q>${responseObj[i].q}</q>
+          <a>${responseObj[i].a}</a>
+        </joke>
+      `;
+    }
+    responseString += '</jokes>';
+    response.writeHead(200, { 'Content-Type': 'text/xml' }); // Send response headers
+    response.write(responseString);
+    response.end();
+  } else {
+    response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
+    response.write(JSON.stringify(responseObj));
+    response.end();
+  }
 };
 
-const getRandomJokesResponse = (request, response, params) => {
-  response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
-  response.write(getRandomJokes(params.limit));
-  response.end();
-};
-
-module.exports.getRandomJokeResponse = getRandomJokeResponse;
 module.exports.getRandomJokesResponse = getRandomJokesResponse;

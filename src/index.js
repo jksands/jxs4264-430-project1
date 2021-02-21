@@ -8,13 +8,13 @@ const query = require('querystring');
 const url = require('url');
 
 const htmlHandler = require('./htmlResponses.js');
-const jsonHandler = require('./jsonResponses.js');
+const jsonHandler = require('./responses.js');
 
 // 3 - locally this will be 3000, on Heroku it will be assigned
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const urlStruct = {
-  '/random-joke': jsonHandler.getRandomJokeResponse,
+  '/random-joke': jsonHandler.getRandomJokesResponse,
   '/random-jokes': jsonHandler.getRandomJokesResponse,
   notFound: htmlHandler.get404Response,
 };
@@ -26,6 +26,9 @@ const onRequest = (request, response) => {
   // console.log(request.headers);
   const parsedUrl = url.parse(request.url);
   const { pathname } = parsedUrl;
+
+  let acceptedTypes = request.headers.accept && request.headers.accept.split(',');
+  acceptedTypes = acceptedTypes || [];
   // console.log('parsedUrl=', parsedUrl);
   // console.log('pathname=', pathname);
 
@@ -35,7 +38,7 @@ const onRequest = (request, response) => {
   console.log('limit=', limit);
 
   if (urlStruct[pathname]) {
-    urlStruct[pathname](request, response, params);
+    urlStruct[pathname](request, response, params, acceptedTypes);
   } else {
     urlStruct.notFound(request, response);
   }
