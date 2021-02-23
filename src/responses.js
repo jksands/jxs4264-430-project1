@@ -40,8 +40,17 @@ const getRandomJokes = (amount = 1) => {
   return responseObj;
 };
 
-const getRandomJokesResponse = (request, response, params, acceptedTypes) => {
+// ALWAYS GIVE CREDIT - in your code comments and documentation
+// Source: https://stackoverflow.com/questions/2219526/how-many-bytes-in-a-javascript-string/29955838
+// Refactored to an arrow function by ACJ
+const getBinarySize = (string) => Buffer.byteLength(string, 'utf8');
+
+const getRandomJokesResponse = (request, response, params, acceptedTypes, method) => {
   const responseObj = getRandomJokes(params.limit);
+  let contentLength;
+  if (method === 'HEAD') {
+    contentLength = getBinarySize(JSON.stringify(responseObj));
+  }
   if (acceptedTypes.includes('text/xml')) {
     let responseString = '<jokes>';
     for (let i = 0; i < responseObj.length; i += 1) {
@@ -53,10 +62,23 @@ const getRandomJokesResponse = (request, response, params, acceptedTypes) => {
       `;
     }
     responseString += '</jokes>';
+
+    // IF there's anything here, then we send back just the headers
+    // THis seems rather clunky so I'm sure there's a more robust way of doing this
+    if (contentLength) {
+      response.writeHead(200, { 'Content-Type': 'text/xml', 'Content-Length': `${contentLength}` }); // Send response headers
+      response.end();
+      return;
+    }
     response.writeHead(200, { 'Content-Type': 'text/xml' }); // Send response headers
     response.write(responseString);
     response.end();
   } else {
+    if (contentLength) {
+      response.writeHead(200, { 'Content-Type': 'application/json', 'Content-Length': `${contentLength}` }); // Send response headers
+      response.end();
+      return;
+    }
     response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
     response.write(JSON.stringify(responseObj));
     response.end();
