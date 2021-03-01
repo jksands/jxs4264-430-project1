@@ -14,10 +14,15 @@ const jsonHandler = require('./responses.js');
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const urlStruct = {
-  '/random-joke': jsonHandler.getRandomJokesResponse,
-  '/random-jokes': jsonHandler.getRandomJokesResponse,
+  '/': htmlHandler.getIndex,
+  '/saved-position': jsonHandler.getSavedPosition,
+  '/random-position': jsonHandler.getRandomPosition,
   '/default-styles.css': htmlHandler.getCSS,
-  '/joke-client.html': htmlHandler.getJokePage,
+  '/index.html': htmlHandler.getIndex,
+  '/load.html': htmlHandler.getLoadPage,
+  '/save.html': htmlHandler.getSavePage,
+  '/admin.html': htmlHandler.getAdminPage,
+  '/pieces.png': htmlHandler.getImg,
   notFound: htmlHandler.get404Response,
 };
 

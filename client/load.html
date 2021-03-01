@@ -1,0 +1,135 @@
+<html>
+
+<head>
+  <title>Chess Saver</title>
+  <link href="default-styles.css" type="text/css" rel="stylesheet" />
+  <style>
+    header {
+      background-color: pink;
+      color: yellow;
+    }
+
+    h1 {
+      font-family: fantasy;
+      filter: drop-shadow(5px 5px 2px #4444dd);
+    }
+
+    section {
+      border-bottom: 1px dashed gray;
+    }
+    canvas {
+      outline: 5px black solid;
+    }
+  </style>
+  <script>
+    let canvas;
+    let ctx;
+    let imgW, imgH;
+    const width = 800, height = 800;
+    window.onload = init;
+    let pieces = new Image();
+    pieces.src = "pieces.png";
+    let imageLoaded = false;
+    pieces.onload = function () { imageLoaded = true; imgW = pieces.width; imgH = pieces.height};
+    function init() {
+      // Add event listener to load button
+      document.querySelector("#load").addEventListener("click", getRandomPosition);
+
+      canvas = document.querySelector('canvas');
+      ctx = canvas.getContext('2d');
+      resetCanvas();
+
+    }
+
+    // color -> 0 is white, 1 is black
+    function drawPiece(type, color, x, y )
+    {
+      switch (type)
+      {
+        case "k": 
+          ctx.drawImage(pieces, 0, color * pieces.height / 2, imgW/6,imgW / 6, x * 100, y * 100,100,100);
+          break;
+        case "q": 
+          ctx.drawImage(pieces, imgW/6 * 1, color * pieces.height / 2, imgW/6,imgW / 6, x * 100, y * 100,100,100);
+          break;
+        case "b": 
+          ctx.drawImage(pieces, imgW/6 * 2, color * pieces.height / 2, imgW/6,imgW / 6, x * 100, y * 100,100,100);
+          break;
+        case "n": 
+          ctx.drawImage(pieces, imgW/6 * 3, color * pieces.height / 2, imgW/6,imgW / 6, x * 100, y * 100,100,100);
+          break;
+        case "r": 
+          ctx.drawImage(pieces, imgW/6 * 4, color * pieces.height / 2, imgW/6,imgW / 6, x * 100, y * 100,100,100);
+          break;
+        case "p": 
+          ctx.drawImage(pieces, imgW/ 6 * 5, color * pieces.height / 2, imgW/6,imgW / 6, x * 100, y * 100,100,100);
+          break;
+      }
+    }
+
+    function drawBoard(size)
+    {
+      console.log("drawBoard called");
+      ctx.fillStyle = "white";
+      let bit = false;
+      for (let i = 0; i < 8; i++)
+      {
+        for (let j = 0; j < 8; j++)
+        {
+          if (j % 2 == bit) ctx.fillRect(size * i, size * j, size, size);
+        }
+        bit = !bit;
+      }
+    }
+
+    // Function for GETting AJAX info from server
+    function getRandomPosition(e)
+    {
+        // remember that an `Event` object gets passed along every time that an event handler or listener calls a function
+        // the `target` property of that event points at the element that sent the event, in this case a button
+        console.log(`An element of id=${e.target.id} was clicked!`);
+
+        const URL = "/random-position";
+        const xhr = new XMLHttpRequest();
+        xhr.onload = handleResponse;
+        xhr.open("GET",URL);
+        // with XHR, after we open a connection, but before we `send()`, we can set 1 or more HTTP request headers
+        // this sin't strictly neccessary because "/random-joke" sends JSON by degault
+        xhr.setRequestHeader('Accept', "application/javascript");
+        xhr.send();
+    }
+
+    const handleResponse = (e) => {
+        console.log("e.target = ", e.target); // e.target is `xhr` object
+        console.log("e.target.response =", e.target.response); // this is a string of "joke" JSON
+        const obj = JSON.parse(e.target.response); // turn it back intp an object
+        console.log("obj=",obj);
+        // clear last canvas
+        resetCanvas();
+        // Draw the contents of the obj object to the canvas
+        for (let i = 0; i < obj.length; i++)
+        {
+          drawPiece(obj[i].type, obj[i].color==="black", obj[i].col - 1, obj[i].row - 1);
+        }
+    };
+
+    function resetCanvas () {
+      ctx.clearRect(0,0, 800,800);
+      ctx.fillStyle = "gray";
+      ctx.fillRect(0, 0, width, height);
+      drawBoard(width/8);
+    }
+  </script>
+</head>
+
+<body>
+  <header>
+    <h1>Click Button to LOAD a random chess position!</h1>
+  </header>
+  <button id="load">Get Random Saved Position</button>
+  <button id="saved">Get Saved Position by Title (not working)</button>
+  <br>
+  <canvas id="canvas" width="800" height="800"></canvas>
+</body>
+
+</html>

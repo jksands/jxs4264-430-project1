@@ -18,6 +18,155 @@ let jokes = [
   { q: 'What did the ocean say to the sailboat?', a: 'Nothing, it just waved?' },
   { q: 'What do you get when you cross a snowman with a vampire?', a: 'Frostbite?' },
 ];
+const pieces = [
+  [
+    {
+      type: 'p', color: 'white', row: '2', col: '1',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '2',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '3',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '4',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '5',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '6',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '7',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '8',
+    },
+    {
+      type: 'r', color: 'white', row: '1', col: '1',
+    },
+    {
+      type: 'n', color: 'white', row: '1', col: '2',
+    },
+    {
+      type: 'b', color: 'white', row: '1', col: '3',
+    },
+    {
+      type: 'k', color: 'white', row: '1', col: '4',
+    },
+    {
+      type: 'q', color: 'white', row: '1', col: '5',
+    },
+    {
+      type: 'b', color: 'white', row: '1', col: '6',
+    },
+    {
+      type: 'n', color: 'white', row: '1', col: '7',
+    },
+    {
+      type: 'r', color: 'white', row: '1', col: '8',
+    },
+
+    {
+      type: 'p', color: 'black', row: '7', col: '1',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '2',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '3',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '4',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '5',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '6',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '7',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '8',
+    },
+    {
+      type: 'r', color: 'black', row: '8', col: '1',
+    },
+    {
+      type: 'n', color: 'black', row: '8', col: '2',
+    },
+    {
+      type: 'b', color: 'black', row: '8', col: '3',
+    },
+    {
+      type: 'k', color: 'black', row: '8', col: '4',
+    },
+    {
+      type: 'q', color: 'black', row: '8', col: '5',
+    },
+    {
+      type: 'b', color: 'black', row: '8', col: '6',
+    },
+    {
+      type: 'n', color: 'black', row: '8', col: '7',
+    },
+    {
+      type: 'r', color: 'black', row: '8', col: '8',
+    },
+  ],
+  [
+    {
+      type: 'k', color: 'white', row: '1', col: '7',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '6',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '7',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '8',
+    },
+    {
+      type: 'r', color: 'white', row: '2', col: '3',
+    },
+
+    {
+      type: 'k', color: 'black', row: '8', col: '7',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '6',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '7',
+    },
+    {
+      type: 'p', color: 'black', row: '6', col: '8',
+    },
+    {
+      type: 'r', color: 'black', row: '1', col: '1',
+    },
+  ],
+  [
+    {
+      type: 'k', color: 'white', row: '4', col: '6',
+    },
+    {
+      type: 'q', color: 'white', row: '5', col: '7',
+    },
+
+    {
+      type: 'k', color: 'black', row: '5', col: '8',
+    },
+    {
+      type: 'p', color: 'black', row: '2', col: '1',
+    },
+  ],
+];
 
 // 6 - this will return a random number no bigger than `max`, as a string
 // we will also doing our query parameter validation here
@@ -38,6 +187,22 @@ const getRandomJokes = (amount = 1) => {
   // I'll just return the object here and then parse it accordingly
   // in getRandomJokesResponse
   return responseObj;
+};
+
+// Not functional as of right now - will return a position by saved NAME
+const getSavedPosition = (request, response, params, acceptedTypes, method) => {
+  // Just return a random position for now
+  const r = _.shuffle(pieces);
+  response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
+  response.write(JSON.stringify(r[0]));
+  response.end();
+};
+
+const getRandomPosition = (request, response, params, acceptedTypes, method) => {
+  const r = _.shuffle(pieces);
+  response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
+  response.write(JSON.stringify(r[0]));
+  response.end();
 };
 
 // ALWAYS GIVE CREDIT - in your code comments and documentation
@@ -86,3 +251,5 @@ const getRandomJokesResponse = (request, response, params, acceptedTypes, method
 };
 
 module.exports.getRandomJokesResponse = getRandomJokesResponse;
+module.exports.getRandomPosition = getRandomPosition;
+module.exports.getSavedPosition = getSavedPosition;
