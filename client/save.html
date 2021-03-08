@@ -3,13 +3,198 @@
     <title>Chess Saver</title>
     <link href="default-styles.css" type="text/css" rel="stylesheet" />
     <style>
+      canvas {
+        outline: 5px black solid;
+      }
+      .right {
+        float:right;
+        clear: left;
+        width: 50%;
+      }
+      #buttons button {
+        width: 150px;
+        height: 100px;
+      }
     </style>
+  <script>
+    let canvas;
+    let ctx;
+    let imgW, imgH;
+    const width = 800, height = 800;
+    window.onload = init;
+    let pieces = new Image();
+    pieces.src = "pieces.png";
+    let imageLoaded = false;
+    let board = new Array(8);
+    let fps = 60;
+    let activePiece = 'p';
+    let activeColor = 0;
+
+    let div;
+    let buttons;
+    let mouseX = 0;
+    let mouseY = 0;
+    for (let i = 0; i < 8; i++)
+    {
+      board[i] = (new Array(8).fill(' '));
+    }
+    pieces.onload = function () { imageLoaded = true; imgW = pieces.width; imgH = pieces.height};
+
+    function init() {
+      // board = 
+      canvas = document.querySelector('canvas');
+      canvas.addEventListener('mousedown', function(e){
+        getCursorPosition(canvas,e);
+      });
+      canvas.addEventListener('mousemove', function(e) {
+        mouseX = e.x;
+        mouseY = e.y;
+      });
+      ctx = canvas.getContext('2d');
+
+      div = document.querySelector('#buttons');
+      buttons = div.querySelectorAll('button');
+      for (let i = 0; i < buttons.length; i++)
+      {
+        buttons[i].addEventListener('click', function(e) {
+          if (Number(e.target.id) >= 0)
+          {
+              activeColor = Number(e.target.id);
+          }
+          else if (e.target.id === "c")
+          {
+            // Call clear logic
+            resetBoard();
+          }
+          else
+          {
+            activePiece = e.target.id;
+            console.log(activePiece);
+          }
+        });
+      }
+      setInterval(resetCanvas, 1000 / fps);
+
+    }
+
+    // color -> 0 is white, 1 is black
+    function drawPiece(type, color, x, y )
+    {
+      switch (type)
+      {
+        case "k": 
+          ctx.drawImage(pieces, 0, color * pieces.height / 2, imgW/6,imgW / 6, x, y,100,100);
+          break;
+        case "q": 
+          ctx.drawImage(pieces, imgW/6 * 1, color * pieces.height / 2, imgW/6,imgW / 6, x, y,100,100);
+          break;
+        case "b": 
+          ctx.drawImage(pieces, imgW/6 * 2, color * pieces.height / 2, imgW/6,imgW / 6, x, y,100,100);
+          break;
+        case "n": 
+          ctx.drawImage(pieces, imgW/6 * 3, color * pieces.height / 2, imgW/6,imgW / 6, x, y,100,100);
+          break;
+        case "r": 
+          ctx.drawImage(pieces, imgW/6 * 4, color * pieces.height / 2, imgW/6,imgW / 6, x, y,100,100);
+          break;
+        case "p": 
+          ctx.drawImage(pieces, imgW/ 6 * 5, color * pieces.height / 2, imgW/6,imgW / 6, x, y,100,100);
+          break;
+        default: // Board at location is empty
+          break;
+
+      }
+      
+    }
+
+    function addPiece(type,color,x,y)
+    {
+      console.log(type);
+      board[x][y] = type + "" + color;
+    }
+
+    function drawBoard(size)
+    {
+      // console.log("drawBoard called");
+      ctx.fillStyle = "white";
+      let bit = false;
+      for (let i = 0; i < 8; i++)
+      {
+        for (let j = 0; j < 8; j++)
+        {
+          if (j % 2 == bit) ctx.fillRect(size * i, size * j, size, size);
+        }
+        bit = !bit;
+      }
+    }
+
+    function drawPieces()
+    {
+      // console.log("drawPieces called");
+      for (let i = 0; i < board.length; i++)
+      {
+        for (let j = 0; j < board[i].length; j++)
+        {
+          drawPiece((board[i][j])[0], Number((board[i][j])[1]), i * 100, j * 100)
+        }
+      }
+    }
+
+    function resetCanvas () {
+      // console.log("ACTIVE PIECE: " + activePiece );
+      ctx.clearRect(0,0, 800,800);
+      ctx.fillStyle = "gray";
+      ctx.fillRect(0, 0, width, height);
+      drawBoard(width/8);
+      drawPieces();
+      // draw piece that follows the mouse
+      drawPiece(activePiece, activeColor, mouseX, mouseY);
+      // console.log(mouseX + "," + mouseY);
+    }
+    function resetBoard() {
+      for (let i = 0; i < 8; i++)
+      {
+        for (let j = 0; j < 8; j++)
+        {
+          board[i][j] = ' ';
+        }
+      }
+    }
+
+    // Code adapted from online source:
+    // https://stackoverflow.com/questions/55677/how-do-i-get-the-coordinates-of-a-mouse-click-on-a-canvas-element/18053642#18053642
+    function getCursorPosition(canvas, event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        console.log("x: " + Math.floor(x / 100) + " y: " + Math.floor(y/100) + "," + activePiece + "," + activeColor);
+        console.log("ADDING PIECE:" + activePiece);
+        addPiece(activePiece, activeColor, Math.floor(x / 100), Math.floor(y / 100))
+    }
+  </script>
   </head>
   <body>
-    <h1>UNFINISHED</h1>
+    <h1>CAN PLACE PIECES, CAN'T SAVE YET</h1>
     
-    <p>User will be able to select pieces from a box on the right and click them onto the chess board</p>
-    <p>Then type in a name to save!</p>
+    <canvas id="canvas" width="800" height="800"></canvas>
+  <div id="buttons" class="right">
+    <p>PIECES</p>
+    <button id="k">KING</button>
+    <button id="q">QUEEN</button>
+    <br>
+    <button id="r">ROOK</button>
+    <button id="b">BISHOP</button>
+    <br>
+    <button id="n">KNIGHT</button>
+    <button id="p">PAWN</button>
+    <br>
+    <button id="-">DELETE</button>
+    <button id="c">CLEAR</button>
+    <br>
+    <p>COLOR</p>
+    <button id="0">WHITE</button>
+    <button id="1">BLACK</button>
+  </div>
     <form action="???">
       <label for="name">NAME</label>
       <input type="text" id="name" name="name"><br><br>
