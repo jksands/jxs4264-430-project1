@@ -30,14 +30,24 @@
     let pieces = new Image();
     pieces.src = "pieces.png";
     let imageLoaded = false;
+    let board = new Array(8);
+    let fps = 60;
+    for (let i = 0; i < 8; i++)
+    {
+      board[i] = (new Array(8).fill(' '));
+    }
+    console.table(board);
     pieces.onload = function () { imageLoaded = true; imgW = pieces.width; imgH = pieces.height};
     function init() {
       // Add event listener to load button
       document.querySelector("#load").addEventListener("click", getRandomPosition);
-
+      // board = 
       canvas = document.querySelector('canvas');
+      canvas.addEventListener('mousedown', function(e){
+        getCursorPosition(canvas,e);
+      });
       ctx = canvas.getContext('2d');
-      resetCanvas();
+      setInterval(resetCanvas, 1000 / fps);
 
     }
 
@@ -64,12 +74,16 @@
         case "p": 
           ctx.drawImage(pieces, imgW/ 6 * 5, color * pieces.height / 2, imgW/6,imgW / 6, x * 100, y * 100,100,100);
           break;
+        default: // Board at location is empty
+          break;
+
       }
+      
     }
 
     function drawBoard(size)
     {
-      console.log("drawBoard called");
+      // console.log("drawBoard called");
       ctx.fillStyle = "white";
       let bit = false;
       for (let i = 0; i < 8; i++)
@@ -79,6 +93,18 @@
           if (j % 2 == bit) ctx.fillRect(size * i, size * j, size, size);
         }
         bit = !bit;
+      }
+    }
+
+    function drawPieces()
+    {
+      // console.log("drawPieces called");
+      for (let i = 0; i < board.length; i++)
+      {
+        for (let j = 0; j < board[i].length; j++)
+        {
+          drawPiece((board[i][j])[0], Number((board[i][j])[1]), i, j)
+        }
       }
     }
 
@@ -104,12 +130,17 @@
         console.log("e.target.response =", e.target.response); // this is a string of "joke" JSON
         const obj = JSON.parse(e.target.response); // turn it back intp an object
         console.log("obj=",obj);
-        // clear last canvas
-        resetCanvas();
-        // Draw the contents of the obj object to the canvas
+        // clear last board
+        resetBoard();
+
+        // Update the board array with information loaded in
         for (let i = 0; i < obj.length; i++)
         {
-          drawPiece(obj[i].type, obj[i].color==="black", obj[i].col - 1, obj[i].row - 1);
+          let x = obj[i].col - 1;
+          let y = obj[i].row - 1;
+          // Always access board in backwards order to get correct visual position
+          // Might swap this if it makes things easier to access
+          board[x][y] = obj[i].type + "" + Number(obj[i].color==="black");
         }
     };
 
@@ -118,6 +149,25 @@
       ctx.fillStyle = "gray";
       ctx.fillRect(0, 0, width, height);
       drawBoard(width/8);
+      drawPieces();
+    }
+    function resetBoard() {
+      for (let i = 0; i < 8; i++)
+      {
+        for (let j = 0; j < 8; j++)
+        {
+          board[i][j] = ' ';
+        }
+      }
+    }
+
+    // Code adapted from online source:
+    // https://stackoverflow.com/questions/55677/how-do-i-get-the-coordinates-of-a-mouse-click-on-a-canvas-element/18053642#18053642
+    function getCursorPosition(canvas, event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        console.log("x: " + x + " y: " + y);
     }
   </script>
 </head>
