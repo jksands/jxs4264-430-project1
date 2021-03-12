@@ -1,115 +1,27 @@
 const _ = require('underscore');
 
+let jokes;
 // An array
 const positions = [
 // of objects
-{
+  {
   // With a name
-  name: "start",
-  // And a board, which is an array of piece info
-  board: [{
-    type: 'p', color: 'white', row: '2', col: '1',
-  },
-  {
-    type: 'p', color: 'white', row: '2', col: '2',
-  },
-  {
-    type: 'p', color: 'white', row: '2', col: '3',
-  },
-  {
-    type: 'p', color: 'white', row: '2', col: '4',
-  },
-  {
-    type: 'p', color: 'white', row: '2', col: '5',
-  },
-  {
-    type: 'p', color: 'white', row: '2', col: '6',
-  },
-  {
-    type: 'p', color: 'white', row: '2', col: '7',
-  },
-  {
-    type: 'p', color: 'white', row: '2', col: '8',
-  },
-  {
-    type: 'r', color: 'white', row: '1', col: '1',
-  },
-  {
-    type: 'n', color: 'white', row: '1', col: '2',
-  },
-  {
-    type: 'b', color: 'white', row: '1', col: '3',
-  },
-  {
-    type: 'k', color: 'white', row: '1', col: '4',
-  },
-  {
-    type: 'q', color: 'white', row: '1', col: '5',
-  },
-  {
-    type: 'b', color: 'white', row: '1', col: '6',
-  },
-  {
-    type: 'n', color: 'white', row: '1', col: '7',
-  },
-  {
-    type: 'r', color: 'white', row: '1', col: '8',
-  },
-
-  {
-    type: 'p', color: 'black', row: '7', col: '1',
-  },
-  {
-    type: 'p', color: 'black', row: '7', col: '2',
-  },
-  {
-    type: 'p', color: 'black', row: '7', col: '3',
-  },
-  {
-    type: 'p', color: 'black', row: '7', col: '4',
-  },
-  {
-    type: 'p', color: 'black', row: '7', col: '5',
-  },
-  {
-    type: 'p', color: 'black', row: '7', col: '6',
-  },
-  {
-    type: 'p', color: 'black', row: '7', col: '7',
-  },
-  {
-    type: 'p', color: 'black', row: '7', col: '8',
-  },
-  {
-    type: 'r', color: 'black', row: '8', col: '1',
-  },
-  {
-    type: 'n', color: 'black', row: '8', col: '2',
-  },
-  {
-    type: 'b', color: 'black', row: '8', col: '3',
-  },
-  {
-    type: 'k', color: 'black', row: '8', col: '4',
-  },
-  {
-    type: 'q', color: 'black', row: '8', col: '5',
-  },
-  {
-    type: 'b', color: 'black', row: '8', col: '6',
-  },
-  {
-    type: 'n', color: 'black', row: '8', col: '7',
-  },
-  {
-    type: 'r', color: 'black', row: '8', col: '8',
-  }]
-},
-{
-  name: "pos1",
-  board: [
+    name: 'start',
+    // And a board, which is an array of piece info
+    board: [{
+      type: 'p', color: 'white', row: '2', col: '1',
+    },
     {
-      type: 'k', color: 'white', row: '1', col: '7',
+      type: 'p', color: 'white', row: '2', col: '2',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '3',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '4',
+    },
+    {
+      type: 'p', color: 'white', row: '2', col: '5',
     },
     {
       type: 'p', color: 'white', row: '2', col: '6',
@@ -121,11 +33,44 @@ const positions = [
       type: 'p', color: 'white', row: '2', col: '8',
     },
     {
-      type: 'r', color: 'white', row: '2', col: '3',
+      type: 'r', color: 'white', row: '1', col: '1',
+    },
+    {
+      type: 'n', color: 'white', row: '1', col: '2',
+    },
+    {
+      type: 'b', color: 'white', row: '1', col: '3',
+    },
+    {
+      type: 'k', color: 'white', row: '1', col: '4',
+    },
+    {
+      type: 'q', color: 'white', row: '1', col: '5',
+    },
+    {
+      type: 'b', color: 'white', row: '1', col: '6',
+    },
+    {
+      type: 'n', color: 'white', row: '1', col: '7',
+    },
+    {
+      type: 'r', color: 'white', row: '1', col: '8',
     },
 
     {
-      type: 'k', color: 'black', row: '8', col: '7',
+      type: 'p', color: 'black', row: '7', col: '1',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '2',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '3',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '4',
+    },
+    {
+      type: 'p', color: 'black', row: '7', col: '5',
     },
     {
       type: 'p', color: 'black', row: '7', col: '6',
@@ -134,30 +79,86 @@ const positions = [
       type: 'p', color: 'black', row: '7', col: '7',
     },
     {
-      type: 'p', color: 'black', row: '6', col: '8',
+      type: 'p', color: 'black', row: '7', col: '8',
     },
     {
-      type: 'r', color: 'black', row: '1', col: '1',
-    }]
-},
-{
-  name: "pos2",
-  board: [
-    {
-      type: 'k', color: 'white', row: '4', col: '6',
+      type: 'r', color: 'black', row: '8', col: '1',
     },
     {
-      type: 'q', color: 'white', row: '5', col: '7',
+      type: 'n', color: 'black', row: '8', col: '2',
     },
+    {
+      type: 'b', color: 'black', row: '8', col: '3',
+    },
+    {
+      type: 'k', color: 'black', row: '8', col: '4',
+    },
+    {
+      type: 'q', color: 'black', row: '8', col: '5',
+    },
+    {
+      type: 'b', color: 'black', row: '8', col: '6',
+    },
+    {
+      type: 'n', color: 'black', row: '8', col: '7',
+    },
+    {
+      type: 'r', color: 'black', row: '8', col: '8',
+    }],
+  },
+  {
+    name: 'pos1',
+    board: [
+      {
+        type: 'k', color: 'white', row: '1', col: '7',
+      },
+      {
+        type: 'p', color: 'white', row: '2', col: '6',
+      },
+      {
+        type: 'p', color: 'white', row: '2', col: '7',
+      },
+      {
+        type: 'p', color: 'white', row: '2', col: '8',
+      },
+      {
+        type: 'r', color: 'white', row: '2', col: '3',
+      },
 
-    {
-      type: 'k', color: 'black', row: '5', col: '8',
-    },
-    {
-      type: 'p', color: 'black', row: '2', col: '1',
-    }]
-}
-]
+      {
+        type: 'k', color: 'black', row: '8', col: '7',
+      },
+      {
+        type: 'p', color: 'black', row: '7', col: '6',
+      },
+      {
+        type: 'p', color: 'black', row: '7', col: '7',
+      },
+      {
+        type: 'p', color: 'black', row: '6', col: '8',
+      },
+      {
+        type: 'r', color: 'black', row: '1', col: '1',
+      }],
+  },
+  {
+    name: 'pos2',
+    board: [
+      {
+        type: 'k', color: 'white', row: '4', col: '6',
+      },
+      {
+        type: 'q', color: 'white', row: '5', col: '7',
+      },
+
+      {
+        type: 'k', color: 'black', row: '5', col: '8',
+      },
+      {
+        type: 'p', color: 'black', row: '2', col: '1',
+      }],
+  },
+];
 
 // let positions = [];
 
@@ -185,7 +186,7 @@ const getRandomJokes = (amount = 1) => {
 // Not functional as of right now - will return a position by saved NAME
 const getSavedPosition = (request, response, params, acceptedTypes, method) => {
   // Just return a random position for now
-  const r = _.shuffle(pieces);
+  const r = _.shuffle(positions);
   response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
   response.write(JSON.stringify(r[0]));
   response.end();
@@ -193,9 +194,9 @@ const getSavedPosition = (request, response, params, acceptedTypes, method) => {
 
 const savePosition = (request, response, body) => {
   let responseCode = 400;
-  let obj = JSON.parse(body.data);
-  let foundItem;
-  if (foundItem = positions.find(e => e.name === body.name)) { // Position exists 
+  const obj = JSON.parse(body.data);
+  const foundItem = positions.find((e) => e.name === body.name);
+  if (foundItem) { // Position exists
     responseCode = 204;
     // update position here
     positions[positions.indexOf(foundItem)].board = obj;
@@ -208,9 +209,9 @@ const savePosition = (request, response, body) => {
   // position does NOT exist
   positions[positions.length] = {
     name: body.name,
-    board: obj
+    board: obj,
   };
-  console.log("TEST: " + obj.type);
+  console.log(`TEST: ${obj.type}`);
 
   responseCode = 201;
 
@@ -229,7 +230,7 @@ const getAllPositions = (request, response) => {
   response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
   response.write(JSON.stringify(positions));
   response.end();
-}
+};
 // ALWAYS GIVE CREDIT - in your code comments and documentation
 // Source: https://stackoverflow.com/questions/2219526/how-many-bytes-in-a-javascript-string/29955838
 // Refactored to an arrow function by ACJ

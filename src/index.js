@@ -27,7 +27,6 @@ const urlStruct = {
   notFound: htmlHandler.get404Response,
 };
 
-
 const handlePost = (request, response, parsedUrl) => {
   if (parsedUrl.pathname === '/save-position') {
     const body = [];
@@ -65,7 +64,7 @@ const onRequest = (request, response) => {
 
   if (httpMethod === 'POST') {
     // Handle POST
-    handlePost(request, response, parsedUrl)
+    handlePost(request, response, parsedUrl);
     return; // ABORT
   }
 
