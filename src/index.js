@@ -17,6 +17,7 @@ const urlStruct = {
   '/': htmlHandler.getIndex,
   '/saved-position': jsonHandler.getSavedPosition,
   '/random-position': jsonHandler.getRandomPosition,
+  '/all-positions': jsonHandler.getAllPositions,
   '/default-styles.css': htmlHandler.getCSS,
   '/index.html': htmlHandler.getIndex,
   '/load.html': htmlHandler.getLoadPage,
@@ -24,6 +25,30 @@ const urlStruct = {
   '/admin.html': htmlHandler.getAdminPage,
   '/pieces.png': htmlHandler.getImg,
   notFound: htmlHandler.get404Response,
+};
+
+
+const handlePost = (request, response, parsedUrl) => {
+  if (parsedUrl.pathname === '/save-position') {
+    const body = [];
+
+    // https://nodejs.org/api/http.html
+    request.on('error', (err) => {
+      console.dir(err);
+      response.statusCode = 400;
+      response.end();
+    });
+
+    request.on('data', (chunk) => {
+      body.push(chunk);
+    });
+
+    request.on('end', () => {
+      const bodyString = Buffer.concat(body).toString(); // name and board
+      const bodyParams = query.parse(bodyString); // turn into an object with .name & .age
+      jsonHandler.savePosition(request, response, bodyParams);
+    });
+  }
 };
 
 // 7 - this is the function that will be called every time a client request comes in
@@ -37,14 +62,19 @@ const onRequest = (request, response) => {
   let acceptedTypes = request.headers.accept && request.headers.accept.split(',');
   acceptedTypes = acceptedTypes || [];
   const httpMethod = request.method;
-  // console.log('parsedUrl=', parsedUrl);
-  // console.log('pathname=', pathname);
+
+  if (httpMethod === 'POST') {
+    // Handle POST
+    handlePost(request, response, parsedUrl)
+    return; // ABORT
+  }
 
   const params = query.parse(parsedUrl.query);
   const { limit } = params;
   console.log('params=', params);
   console.log('limit=', limit);
 
+  // Assumse GETS
   if (urlStruct[pathname]) {
     urlStruct[pathname](request, response, params, acceptedTypes, httpMethod);
   } else {

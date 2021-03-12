@@ -1,124 +1,113 @@
 const _ = require('underscore');
 
-let jokes = [
-  { q: 'What do you call a very small valentine?', a: 'A valen-tiny?' },
-  { q: 'What did the dog say when he rubbed his tail on the sandpaper?', a: 'Ruff, Ruff?' },
-  { q: "Why don't sharks like to eat clowns?", a: 'Because they taste funny?' },
-  { q: 'What did the boy cat say to the girl cat?', a: "You're Purr-fect?" },
-  { q: "What is a frog's favorite outdoor sport?", a: 'Fly Fishing?' },
-  { q: 'I hate jokes about German sausages.', a: 'Theyre the wurst?' },
-  { q: 'Did you hear about the cheese factory that exploded in France?', a: 'There was nothing left but de Brie?' },
-  { q: 'Our wedding was so beautiful ', a: 'Even the cake was in tiers?' },
-  { q: 'Is this pool safe for diving?', a: 'It deep ends?' },
-  { q: 'Dad, can you put my shoes on?', a: 'I dont think theyll fit me?' },
-  { q: 'Can February March?', a: 'No, but April May?' },
-  { q: 'What lies at the bottom of the ocean and twitches?', a: 'A nervous wreck?' },
-  { q: 'Im reading a book on the history of glue.', a: 'I just cant seem to put it down?' },
-  { q: 'Dad, can you put the cat out?', a: 'I didnt know it was on fire?' },
-  { q: 'What did the ocean say to the sailboat?', a: 'Nothing, it just waved?' },
-  { q: 'What do you get when you cross a snowman with a vampire?', a: 'Frostbite?' },
-];
-const pieces = [
-  [
-    {
-      type: 'p', color: 'white', row: '2', col: '1',
-    },
-    {
-      type: 'p', color: 'white', row: '2', col: '2',
-    },
-    {
-      type: 'p', color: 'white', row: '2', col: '3',
-    },
-    {
-      type: 'p', color: 'white', row: '2', col: '4',
-    },
-    {
-      type: 'p', color: 'white', row: '2', col: '5',
-    },
-    {
-      type: 'p', color: 'white', row: '2', col: '6',
-    },
-    {
-      type: 'p', color: 'white', row: '2', col: '7',
-    },
-    {
-      type: 'p', color: 'white', row: '2', col: '8',
-    },
-    {
-      type: 'r', color: 'white', row: '1', col: '1',
-    },
-    {
-      type: 'n', color: 'white', row: '1', col: '2',
-    },
-    {
-      type: 'b', color: 'white', row: '1', col: '3',
-    },
-    {
-      type: 'k', color: 'white', row: '1', col: '4',
-    },
-    {
-      type: 'q', color: 'white', row: '1', col: '5',
-    },
-    {
-      type: 'b', color: 'white', row: '1', col: '6',
-    },
-    {
-      type: 'n', color: 'white', row: '1', col: '7',
-    },
-    {
-      type: 'r', color: 'white', row: '1', col: '8',
-    },
+// An array
+const positions = [
+// of objects
+{
+  // With a name
+  name: "start",
+  // And a board, which is an array of piece info
+  board: [{
+    type: 'p', color: 'white', row: '2', col: '1',
+  },
+  {
+    type: 'p', color: 'white', row: '2', col: '2',
+  },
+  {
+    type: 'p', color: 'white', row: '2', col: '3',
+  },
+  {
+    type: 'p', color: 'white', row: '2', col: '4',
+  },
+  {
+    type: 'p', color: 'white', row: '2', col: '5',
+  },
+  {
+    type: 'p', color: 'white', row: '2', col: '6',
+  },
+  {
+    type: 'p', color: 'white', row: '2', col: '7',
+  },
+  {
+    type: 'p', color: 'white', row: '2', col: '8',
+  },
+  {
+    type: 'r', color: 'white', row: '1', col: '1',
+  },
+  {
+    type: 'n', color: 'white', row: '1', col: '2',
+  },
+  {
+    type: 'b', color: 'white', row: '1', col: '3',
+  },
+  {
+    type: 'k', color: 'white', row: '1', col: '4',
+  },
+  {
+    type: 'q', color: 'white', row: '1', col: '5',
+  },
+  {
+    type: 'b', color: 'white', row: '1', col: '6',
+  },
+  {
+    type: 'n', color: 'white', row: '1', col: '7',
+  },
+  {
+    type: 'r', color: 'white', row: '1', col: '8',
+  },
 
-    {
-      type: 'p', color: 'black', row: '7', col: '1',
-    },
-    {
-      type: 'p', color: 'black', row: '7', col: '2',
-    },
-    {
-      type: 'p', color: 'black', row: '7', col: '3',
-    },
-    {
-      type: 'p', color: 'black', row: '7', col: '4',
-    },
-    {
-      type: 'p', color: 'black', row: '7', col: '5',
-    },
-    {
-      type: 'p', color: 'black', row: '7', col: '6',
-    },
-    {
-      type: 'p', color: 'black', row: '7', col: '7',
-    },
-    {
-      type: 'p', color: 'black', row: '7', col: '8',
-    },
-    {
-      type: 'r', color: 'black', row: '8', col: '1',
-    },
-    {
-      type: 'n', color: 'black', row: '8', col: '2',
-    },
-    {
-      type: 'b', color: 'black', row: '8', col: '3',
-    },
-    {
-      type: 'k', color: 'black', row: '8', col: '4',
-    },
-    {
-      type: 'q', color: 'black', row: '8', col: '5',
-    },
-    {
-      type: 'b', color: 'black', row: '8', col: '6',
-    },
-    {
-      type: 'n', color: 'black', row: '8', col: '7',
-    },
-    {
-      type: 'r', color: 'black', row: '8', col: '8',
-    },
-  ],
-  [
+  {
+    type: 'p', color: 'black', row: '7', col: '1',
+  },
+  {
+    type: 'p', color: 'black', row: '7', col: '2',
+  },
+  {
+    type: 'p', color: 'black', row: '7', col: '3',
+  },
+  {
+    type: 'p', color: 'black', row: '7', col: '4',
+  },
+  {
+    type: 'p', color: 'black', row: '7', col: '5',
+  },
+  {
+    type: 'p', color: 'black', row: '7', col: '6',
+  },
+  {
+    type: 'p', color: 'black', row: '7', col: '7',
+  },
+  {
+    type: 'p', color: 'black', row: '7', col: '8',
+  },
+  {
+    type: 'r', color: 'black', row: '8', col: '1',
+  },
+  {
+    type: 'n', color: 'black', row: '8', col: '2',
+  },
+  {
+    type: 'b', color: 'black', row: '8', col: '3',
+  },
+  {
+    type: 'k', color: 'black', row: '8', col: '4',
+  },
+  {
+    type: 'q', color: 'black', row: '8', col: '5',
+  },
+  {
+    type: 'b', color: 'black', row: '8', col: '6',
+  },
+  {
+    type: 'n', color: 'black', row: '8', col: '7',
+  },
+  {
+    type: 'r', color: 'black', row: '8', col: '8',
+  }]
+},
+{
+  name: "pos1",
+  board: [
     {
       type: 'k', color: 'white', row: '1', col: '7',
     },
@@ -149,9 +138,11 @@ const pieces = [
     },
     {
       type: 'r', color: 'black', row: '1', col: '1',
-    },
-  ],
-  [
+    }]
+},
+{
+  name: "pos2",
+  board: [
     {
       type: 'k', color: 'white', row: '4', col: '6',
     },
@@ -164,9 +155,11 @@ const pieces = [
     },
     {
       type: 'p', color: 'black', row: '2', col: '1',
-    },
-  ],
-];
+    }]
+}
+]
+
+// let positions = [];
 
 // 6 - this will return a random number no bigger than `max`, as a string
 // we will also doing our query parameter validation here
@@ -198,13 +191,45 @@ const getSavedPosition = (request, response, params, acceptedTypes, method) => {
   response.end();
 };
 
+const savePosition = (request, response, body) => {
+  let responseCode = 400;
+  let obj = JSON.parse(body.data);
+  let foundItem;
+  if (foundItem = positions.find(e => e.name === body.name)) { // Position exists 
+    responseCode = 204;
+    // update position here
+    positions[positions.indexOf(foundItem)].board = obj;
+    // foundItem.board = obj;
+    response.writeHead(responseCode); // Send response headers
+    response.end();
+    return;
+  }
+
+  // position does NOT exist
+  positions[positions.length] = {
+    name: body.name,
+    board: obj
+  };
+  console.log("TEST: " + obj.type);
+
+  responseCode = 201;
+
+  response.writeHead(responseCode); // Send response headers
+  response.end();
+};
+
 const getRandomPosition = (request, response, params, acceptedTypes, method) => {
-  const r = _.shuffle(pieces);
+  const r = _.shuffle(positions);
   response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
   response.write(JSON.stringify(r[0]));
   response.end();
 };
 
+const getAllPositions = (request, response) => {
+  response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
+  response.write(JSON.stringify(positions));
+  response.end();
+}
 // ALWAYS GIVE CREDIT - in your code comments and documentation
 // Source: https://stackoverflow.com/questions/2219526/how-many-bytes-in-a-javascript-string/29955838
 // Refactored to an arrow function by ACJ
@@ -253,3 +278,5 @@ const getRandomJokesResponse = (request, response, params, acceptedTypes, method
 module.exports.getRandomJokesResponse = getRandomJokesResponse;
 module.exports.getRandomPosition = getRandomPosition;
 module.exports.getSavedPosition = getSavedPosition;
+module.exports.getAllPositions = getAllPositions;
+module.exports.savePosition = savePosition;

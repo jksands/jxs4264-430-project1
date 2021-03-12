@@ -1,15 +1,138 @@
 <html>
-  <head>
-    <title>Chess Saver</title>
-    <link href="default-styles.css" type="text/css" rel="stylesheet" />
-    <style>
-    </style>
-  </head>
-  <body>
-    <h1>UNFINISHED</h1>
-    
-    <p>Will show admin information...</p>
-    <p>Will likely just dump all the saved positions as raw JSON for debugging purposes</p>
-    
-  </body>
+
+<head>
+  <title>Chess Saver</title>
+  <link href="default-styles.css" type="text/css" rel="stylesheet" />
+  <style>
+    canvas {
+      margin: 10px;
+      outline: 5px black solid;
+    }
+  </style>
+  <script>
+    window.onload = init;
+    let pieces = new Image();
+    const W = 400,H = 400;
+    pieces.src = "pieces.png";
+    let imageLoaded = false;
+    let imgW, imgH;
+    let S = W / 8; // Size of a tile
+    pieces.onload = function () { imageLoaded = true; imgW = pieces.width; imgH = pieces.height};
+    function init() {
+      while (!imageLoaded)
+      {
+        // Wait
+      }
+      // Image is loaded after this point
+
+      getAllPositions();
+    }
+    // color -> 0 is white, 1 is black
+    function drawPiece(type, color, x, y, ctx)
+    {
+      switch (type)
+      {
+        case "k": 
+          ctx.drawImage(pieces, 0, color * pieces.height / 2, imgW/6,imgW / 6, x * S, y * S,S,S);
+          break;
+        case "q": 
+          ctx.drawImage(pieces, imgW/6 * 1, color * pieces.height / 2, imgW/6,imgW / 6, x * S, y * S,S,S);
+          break;
+        case "b": 
+          ctx.drawImage(pieces, imgW/6 * 2, color * pieces.height / 2, imgW/6,imgW / 6, x * S, y * S,S,S);
+          break;
+        case "n": 
+          ctx.drawImage(pieces, imgW/6 * 3, color * pieces.height / 2, imgW/6,imgW / 6, x * S, y * S,S,S);
+          break;
+        case "r": 
+          ctx.drawImage(pieces, imgW/6 * 4, color * pieces.height / 2, imgW/6,imgW / 6, x * S, y * S,S,S);
+          break;
+        case "p": 
+          ctx.drawImage(pieces, imgW/ 6 * 5, color * pieces.height / 2, imgW/6,imgW / 6, x * S, y * S,S,S);
+          break;
+        default: // Board at location is empty
+          break;
+
+      }
+      
+    }
+    function drawBoard(size, ctx)
+    {
+      // console.log("drawBoard called");
+      ctx.fillStyle = "white";
+      let bit = false;
+      for (let i = 0; i < 8; i++)
+      {
+        for (let j = 0; j < 8; j++)
+        {
+          if (j % 2 == bit) ctx.fillRect(size * i, size * j, size, size);
+        }
+        bit = !bit;
+      }
+    }
+    // Function for GETting AJAX info from server
+    function getAllPositions(e) {
+      // remember that an `Event` object gets passed along every time that an event handler or listener calls a function
+      // the `target` property of that event points at the element that sent the event, in this case a button
+      // console.log(`An element of id=${e.target.id} was clicked!`);
+
+      const URL = "/all-positions";
+      const xhr = new XMLHttpRequest();
+      xhr.onload = handleResponse;
+      xhr.open("GET", URL);
+      // with XHR, after we open a connection, but before we `send()`, we can set 1 or more HTTP request headers
+      // this sin't strictly neccessary because "/random-joke" sends JSON by degault
+      xhr.setRequestHeader('Accept', "application/javascript");
+      xhr.send();
+    }
+
+    const handleResponse = (e) => {
+      console.log("e.target = ", e.target); // e.target is `xhr` object
+      console.log("e.target.response =", e.target.response); // this is a string of "joke" JSON
+      const obj = JSON.parse(e.target.response); // turn it back intp an object
+      let output = document.querySelector("#output");
+
+      for (let i = 0; i < obj.length; i++) {
+
+        let canv = document.createElement('canvas');
+        let ctx = canv.getContext('2d');
+        canv.width = W;
+        canv.height = H;
+        ctx.fillStyle = "gray"
+        ctx.fillRect(0, 0, W, H);
+        drawBoard(W / 8, ctx);
+        let b = obj[i].board;
+        console.log(b.length);
+        for (let j = 0; j < b.length; j++)
+        {
+          let c = b[j].color === 'white'? 0 :1;
+          drawPiece(b[j].type, c, b[j].col - 1, b[j].row - 1, ctx);
+        }
+        output.appendChild(canv);
+      }
+      console.log(obj);
+    };
+  </script>
+</head>
+
+<body>
+  <header>
+    <nav>
+      <a href = "/">Home</a>
+      |
+      <a href = "/load.html">Load</a>
+      |
+      <a href = "/save.html">Save</a>
+      |
+      <span id="current">Admin</a>
+      
+    </nav>
+  </header>
+
+  <p>Will show admin information...</p>
+  <p>Will likely just dump all the saved positions as raw JSON for debugging purposes</p>
+  <div id="output"></div>
+
+</body>
+
 </html>
