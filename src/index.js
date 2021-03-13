@@ -69,9 +69,9 @@ const onRequest = (request, response) => {
   }
 
   const params = query.parse(parsedUrl.query);
-  const { limit } = params;
+  const { name } = params;
   console.log('params=', params);
-  console.log('limit=', limit);
+  console.log('name=', name);
 
   // Assumse GETS
   if (urlStruct[pathname]) {

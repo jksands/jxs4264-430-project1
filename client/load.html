@@ -20,6 +20,19 @@
     canvas {
       outline: 5px black solid;
     }
+    
+    .right {
+      float: left;
+      clear: right;
+      width: 30%;
+    }
+    .left {
+      float:left;
+    }
+
+    #buttons button {
+      height: 100px;
+    }
   </style>
   <script>
     let canvas;
@@ -32,6 +45,7 @@
     let imageLoaded = false;
     let board = new Array(8);
     let fps = 60;
+    let selection;
     for (let i = 0; i < 8; i++)
     {
       board[i] = (new Array(8).fill(' '));
@@ -40,13 +54,17 @@
     pieces.onload = function () { imageLoaded = true; imgW = pieces.width; imgH = pieces.height};
     function init() {
       // Add event listener to load button
-      document.querySelector("#load").addEventListener("click", getRandomPosition);
+      document.querySelector("#loadRandom").addEventListener("click", getPosition);
+      document.querySelector("#loadName").addEventListener("click", getPosition);
       // board = 
       canvas = document.querySelector('canvas');
       canvas.addEventListener('mousedown', function(e){
         getCursorPosition(canvas,e);
       });
       ctx = canvas.getContext('2d');
+      selection = document.querySelector('#selection');
+      let e;
+      getAllPositions(e);
       setInterval(resetCanvas, 1000 / fps);
 
     }
@@ -109,13 +127,18 @@
     }
 
     // Function for GETting AJAX info from server
-    function getRandomPosition(e)
+    function getPosition(e)
     {
-        // remember that an `Event` object gets passed along every time that an event handler or listener calls a function
-        // the `target` property of that event points at the element that sent the event, in this case a button
-        console.log(`An element of id=${e.target.id} was clicked!`);
+        // Set the URL
+        let URL = "/random-position";
+        // if we clicked the "Load by name" button
+        if (e.target.id == "loadName")
+        {
+          // add the name of the active select box to the URL
+          let name = selection.options[selection.selectedIndex].value;
+          URL += `?name=${name}`;
+        }
 
-        const URL = "/random-position";
         const xhr = new XMLHttpRequest();
         xhr.onload = handleResponse;
         xhr.open("GET",URL);
@@ -125,25 +148,49 @@
         xhr.send();
     }
 
+    // Function for GETting AJAX info from server
+    function getAllPositions(e)
+    {
+        const URL = "/all-positions";
+        const xhr = new XMLHttpRequest();
+        // ONce we get all the positions
+        xhr.onload = (e) => {
+          const obj = JSON.parse(e.target.response); // turn it back intp an object
+          for (let i = 0; i < obj.length; i++)
+          {
+            // Loop through and add each name to the select tag
+            let opt = document.createElement('option');
+            opt.value = obj[i].name;
+            opt.innerHTML = obj[i].name;
+            selection.appendChild(opt);
+
+          }
+        };
+        xhr.open("GET",URL);
+        // with XHR, after we open a connection, but before we `send()`, we can set 1 or more HTTP request headers
+        // this sin't strictly neccessary because "/random-joke" sends JSON by degault
+        xhr.setRequestHeader('Accept', "application/javascript");
+        xhr.send();
+    }
+
     const handleResponse = (e) => {
-        console.log("e.target = ", e.target); // e.target is `xhr` object
-        console.log("e.target.response =", e.target.response); // this is a string of "joke" JSON
         const obj = JSON.parse(e.target.response); // turn it back intp an object
-        console.log("obj=",obj);
         // clear last board
         resetBoard();
-
+        // Get the board
+        let b = obj.board;
         // Update the board array with information loaded in
-        for (let i = 0; i < obj.length; i++)
+        for (let i = 0; i < b.length; i++)
         {
-          let x = obj[i].col - 1;
-          let y = obj[i].row - 1;
-          // Always access board in backwards order to get correct visual position
-          // Might swap this if it makes things easier to access
-          board[x][y] = obj[i].type + "" + Number(obj[i].color==="black");
+          // Easier to type, - 1 because array is 0 indexed
+          let x = b[i].col - 1;
+          let y = b[i].row - 1;
+          // Store the type and color in the same string (ex: k0)
+          board[x][y] = b[i].type + "" + Number(b[i].color==="black");
         }
     };
 
+    // Resets the canvas EVERY FRAME
     function resetCanvas () {
       ctx.clearRect(0,0, 800,800);
       ctx.fillStyle = "gray";
@@ -151,6 +198,7 @@
       drawBoard(width/8);
       drawPieces();
     }
+    // Resets the underlying board array
     function resetBoard() {
       for (let i = 0; i < 8; i++)
       {
@@ -163,11 +211,11 @@
 
     // Code adapted from online source:
     // https://stackoverflow.com/questions/55677/how-do-i-get-the-coordinates-of-a-mouse-click-on-a-canvas-element/18053642#18053642
+    // Gets the current cursos position inside the canvas
     function getCursorPosition(canvas, event) {
         const rect = canvas.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
-        console.log("x: " + x + " y: " + y);
     }
   </script>
 </head>
@@ -186,9 +234,14 @@
     </nav>
     <h1>Click Button to LOAD a random chess position!</h1>
   </header>
-  <button id="load">Get Random Saved Position</button>
-  <button id="saved">Get Saved Position by Title (not working)</button>
-  <br>
+  <div id="buttons" class="right">
+    <button id="loadRandom">Get Random Saved Position</button>
+    <br>
+    <br>
+    <select id="selection" name="positions"></select>
+    <br>
+    <button id="loadName">Get Saved Position by Title</button>
+  </div>
   <canvas id="canvas" width="800" height="800"></canvas>
 </body>
 

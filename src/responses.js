@@ -220,9 +220,17 @@ const savePosition = (request, response, body) => {
 };
 
 const getRandomPosition = (request, response, params, acceptedTypes, method) => {
-  const r = _.shuffle(positions);
+  let obj;
+  if (params.name) {
+    // CLIENT can only choose names that exist from drop down box
+    // so no need to error check here
+    obj = positions.find((e) => e.name === params.name);
+  } else {
+    const r = _.shuffle(positions);
+    obj = r[0];
+  }
   response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
-  response.write(JSON.stringify(r[0]));
+  response.write(JSON.stringify(obj));
   response.end();
 };
 
