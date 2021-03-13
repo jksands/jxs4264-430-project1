@@ -1,42 +1,69 @@
 <html>
-  <head>
-    <title>Chess Saver</title>
-    <link href="default-styles.css" type="text/css" rel="stylesheet" />
-    <style>
-      /* header{
-        background-color:pink;
-        color: yellow;
-        font-size:2em;
-        padding:1em;
-      }
-      
-      h1{
-        font-family: fantasy;
-        filter: drop-shadow(5px 5px 2px #4444dd);
-      }
-      
-      section{
-        border-bottom:1px dashed gray;
-      } */
-    </style>
-  </head>
-  <body>
-    <header>
-      
+
+<head>
+  <title>Chess Saver</title>
+  <link href="default-styles.css" type="text/css" rel="stylesheet" />
+  <style>
+    nav {
+      background-color: aliceblue;
+      font-size: 24;
+      margin: 10px;
+      padding: 10px;
+    }
+
+    nav a {
+      font-size: 24;
+    }
+
+    div {
+      border-bottom: 2px black solid;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+
     <nav>
       <span id="current">Home</a>
-      |
-      <a href = "/load.html">Load</a>
-      |
-      <a href = "/save.html">Save</a>
-      |
-      <a href = "/admin.html">Admin</a>
-      
+        |
+        <a href="/load.html">Load</a>
+        |
+        <a href="/save.html">Save</a>
+        |
+        <a href="/admin.html">Admin</a>
+
     </nav>
-    </header>
-    <h1>Chess Saver</h1>
-    <p>Get started with <a href="load.html">load.html</a> or <a href="save.html">save.html</a> or <a href="admin.html">admin.html</a></p>
-    <p>(NOTE: Load is pretty much the same as last time.  Most progress made was in <a href="save.html">save.html</a></p>
-    
-  </body>
+  </header>
+  <h1>Welcome to Chess Saver!</h1>
+  <h2>The One-Stop-Shop for all your chess position saving needs!</h2>
+  <div>
+
+    <h3>USERS:</h3>
+    <ul>
+      <li>Head to <a href="load.html">Load</a> to load a position FROM the server</li>
+      <li>Head to <a href="save.html">Save</a> to save a position TO the server</li>
+    </ul>
+  </div>
+  <div>
+    <h3>DEVELOPERS:</h3>
+    <p>These endpoints will get a position from the server either randomly, by name, or simply all of them!!</p>
+    <ul>
+      <li><a href="/random-position">/random-position</a></li>
+      <li><a href="/random-position?name=start">/random-position?name=start</a></li>
+      <li><a href="/all-positions">/all-positions</a></li>
+    </ul>
+    <p>If an invalid name is given as a parameter, the API will simply return a random position instead</p>
+  </div>
+  
+  <div>
+    <h3>ADMINS:</h3>
+    <ul>
+      <li>Head to <a href="admin.html">Admin</a> to see what positions are saved on the server!</li>
+      <li>Check out the <a href="/404">/404Page</a> (if you haven't already due to erroneous typing)</li>
+    </ul>
+  </div>
+
+</body>
+
 </html>

@@ -15,7 +15,6 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 const urlStruct = {
   '/': htmlHandler.getIndex,
-  '/saved-position': jsonHandler.getSavedPosition,
   '/random-position': jsonHandler.getRandomPosition,
   '/all-positions': jsonHandler.getAllPositions,
   '/default-styles.css': htmlHandler.getCSS,
@@ -24,6 +23,8 @@ const urlStruct = {
   '/save.html': htmlHandler.getSavePage,
   '/admin.html': htmlHandler.getAdminPage,
   '/pieces.png': htmlHandler.getImg,
+  '/delete.png': htmlHandler.getDelImg,
+  '/clear.png': htmlHandler.getClearImg,
   notFound: htmlHandler.get404Response,
 };
 
@@ -33,7 +34,6 @@ const handlePost = (request, response, parsedUrl) => {
 
     // https://nodejs.org/api/http.html
     request.on('error', (err) => {
-      console.dir(err);
       response.statusCode = 400;
       response.end();
     });
@@ -44,7 +44,7 @@ const handlePost = (request, response, parsedUrl) => {
 
     request.on('end', () => {
       const bodyString = Buffer.concat(body).toString(); // name and board
-      const bodyParams = query.parse(bodyString); // turn into an object with .name & .age
+      const bodyParams = query.parse(bodyString); // turn into an object with .name and .board
       jsonHandler.savePosition(request, response, bodyParams);
     });
   }

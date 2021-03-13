@@ -1,6 +1,5 @@
 const _ = require('underscore');
 
-let jokes;
 // An array
 const positions = [
 // of objects
@@ -160,47 +159,19 @@ const positions = [
   },
 ];
 
-// let positions = [];
-
-// 6 - this will return a random number no bigger than `max`, as a string
-// we will also doing our query parameter validation here
-const getRandomJokes = (amount = 1) => {
-  let limit = Number(amount);
-  limit = Math.floor(limit);
-  limit = !limit ? 1 : limit;
-  limit = limit < 1 ? 1 : limit;
-  limit = limit > jokes.length ? jokes.length : limit;
-  jokes = _.shuffle(jokes);
-  const responseObj = [];
-  for (let i = 0; i < limit; i += 1) {
-    responseObj[i] = {
-      q: jokes[i].q,
-      a: jokes[i].a,
-    };
-  }
-  // I'll just return the object here and then parse it accordingly
-  // in getRandomJokesResponse
-  return responseObj;
-};
-
-// Not functional as of right now - will return a position by saved NAME
-const getSavedPosition = (request, response, params, acceptedTypes, method) => {
-  // Just return a random position for now
-  const r = _.shuffle(positions);
-  response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
-  response.write(JSON.stringify(r[0]));
-  response.end();
-};
-
 const savePosition = (request, response, body) => {
   let responseCode = 400;
+  if (!body.name || !body.data) {
+    response.writeHead(responseCode); // Send response headers
+    response.end();
+    return;
+  }
   const obj = JSON.parse(body.data);
   const foundItem = positions.find((e) => e.name === body.name);
   if (foundItem) { // Position exists
     responseCode = 204;
     // update position here
     positions[positions.indexOf(foundItem)].board = obj;
-    // foundItem.board = obj;
     response.writeHead(responseCode); // Send response headers
     response.end();
     return;
@@ -211,7 +182,6 @@ const savePosition = (request, response, body) => {
     name: body.name,
     board: obj,
   };
-  console.log(`TEST: ${obj.type}`);
 
   responseCode = 201;
 
@@ -219,49 +189,45 @@ const savePosition = (request, response, body) => {
   response.end();
 };
 
+// ALWAYS GIVE CREDIT - in your code comments and documentation
+// Source: https://stackoverflow.com/questions/2219526/how-many-bytes-in-a-javascript-string/29955838
+// Refactored to an arrow function by ACJ
+const getBinarySize = (string) => Buffer.byteLength(string, 'utf8');
+
 const getRandomPosition = (request, response, params, acceptedTypes, method) => {
   let obj;
   if (params.name) {
     // CLIENT can only choose names that exist from drop down box
     // so no need to error check here
     obj = positions.find((e) => e.name === params.name);
-  } else {
+  }
+  // Failed to find an obj of that name or param not given
+  if (!obj) {
+    // just return random obj
     const r = _.shuffle(positions);
     obj = r[0];
   }
-  response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
-  response.write(JSON.stringify(obj));
-  response.end();
-};
 
-const getAllPositions = (request, response) => {
-  response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
-  response.write(JSON.stringify(positions));
-  response.end();
-};
-// ALWAYS GIVE CREDIT - in your code comments and documentation
-// Source: https://stackoverflow.com/questions/2219526/how-many-bytes-in-a-javascript-string/29955838
-// Refactored to an arrow function by ACJ
-const getBinarySize = (string) => Buffer.byteLength(string, 'utf8');
-
-const getRandomJokesResponse = (request, response, params, acceptedTypes, method) => {
-  const responseObj = getRandomJokes(params.limit);
+  // check for head request
   let contentLength;
   if (method === 'HEAD') {
-    contentLength = getBinarySize(JSON.stringify(responseObj));
+    contentLength = getBinarySize(JSON.stringify(obj));
   }
+
+  // XML response
   if (acceptedTypes.includes('text/xml')) {
-    let responseString = '<jokes>';
-    for (let i = 0; i < responseObj.length; i += 1) {
+    let responseString = `<name>${obj.name}</name>\n<pieces>`;
+    for (let i = 0; i < obj.board.length; i += 1) {
       responseString += `
-        <joke>
-          <q>${responseObj[i].q}</q>
-          <a>${responseObj[i].a}</a>
-        </joke>
+        <piece>
+          <type>${obj.board[i].type}</type>
+          <color>${obj.board[i].a}</color>
+          <row>${obj.board[i].row}</row>
+          <column>${obj.board[i].col}</column>
+        </piece>
       `;
     }
-    responseString += '</jokes>';
-
+    responseString += '</pieces>';
     // IF there's anything here, then we send back just the headers
     // THis seems rather clunky so I'm sure there's a more robust way of doing this
     if (contentLength) {
@@ -279,13 +245,16 @@ const getRandomJokesResponse = (request, response, params, acceptedTypes, method
       return;
     }
     response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
-    response.write(JSON.stringify(responseObj));
+    response.write(JSON.stringify(obj));
     response.end();
   }
 };
 
-module.exports.getRandomJokesResponse = getRandomJokesResponse;
+const getAllPositions = (request, response) => {
+  response.writeHead(200, { 'Content-Type': 'application/json' }); // Send response headers
+  response.write(JSON.stringify(positions));
+  response.end();
+};
 module.exports.getRandomPosition = getRandomPosition;
-module.exports.getSavedPosition = getSavedPosition;
 module.exports.getAllPositions = getAllPositions;
 module.exports.savePosition = savePosition;

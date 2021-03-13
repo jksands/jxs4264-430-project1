@@ -4,6 +4,17 @@
   <title>Chess Saver</title>
   <link href="default-styles.css" type="text/css" rel="stylesheet" />
   <style>
+    nav {
+      background-color: aliceblue;
+      font-size: 24;
+      margin: 10px;
+      padding: 10px;
+    }
+
+    nav a {
+      font-size: 24;
+    }
+
     canvas {
       outline: 5px black solid;
     }
@@ -18,34 +29,51 @@
       width: 150px;
       height: 80px;
     }
+
     form input {
       display: inline;
     }
   </style>
   <script>
+    // Canvases
     let canvas;
     let buttonsCanvas;
+    // contexts
     let ctx;
     let bctx;
+    // Shorthand vars for spritesheet sizr
     let imgW, imgH;
+    // for canvas
     const width = 800, height = 800;
+
     window.onload = init;
+    // Load images
+    let delImg = new Image();
+    delImg.src = "delete.png";
+    let clearImg = new Image();
+    clearImg.src = "clear.png";
     let pieces = new Image();
     pieces.src = "pieces.png";
     let imageLoaded = false;
+
+    // init board
     let board = new Array(8);
+
+    // set default variabls
     let fps = 60;
     let activePiece = 'p';
     let activeColor = 0;
-
-    let div;
-    let buttons;
+    // Stores mouse info
     let mouseX = 0;
     let mouseY = 0;
+    // Stores rects for the GUI
     let rects;
+
+    // inits the board
     for (let i = 0; i < 8; i++) {
       board[i] = (new Array(8).fill(' '));
     }
+    // loads the image (this is largest image so will take longest to load)
     pieces.onload = function () { imageLoaded = true; imgW = pieces.width; imgH = pieces.height };
 
     function init() {
@@ -54,7 +82,7 @@
         // WAIT
       }
 
-      // board = 
+      // Select and add events to main canvas
       canvas = document.querySelector('#canvas');
       canvas.addEventListener('mousedown', function (e) {
         getCursorPosition(canvas, e);
@@ -66,42 +94,30 @@
 
       ctx = canvas.getContext('2d');
 
+      // Select and add events to GUI canvas
       buttonsCanvas = document.querySelector('#pieces');
       buttonsCanvas.addEventListener('mousedown', function (e) {
         checkBoxCollisions(buttonsCanvas, e);
       });
 
       bctx = buttonsCanvas.getContext('2d');
+
+      // Define the rectangles of the GUI
       rects = [
         { type: "k", x: 50, y: 50 },
         { type: "q", x: 150, y: 50 },
-        { type: "r", x: 50, y: 150 },
-        { type: "b", x: 150, y: 150 },
-        { type: "n", x: 50, y: 250 },
-        { type: "p", x: 150, y: 250 },
-        { type: "0", x: 50, y: 350 },
-        { type: "1", x: 150, y: 350 }
+        { type: "r", x: 50, y: 200 },
+        { type: "b", x: 150, y: 200 },
+        { type: "n", x: 50, y: 350 },
+        { type: "p", x: 150, y: 350 },
+        { type: "0", x: 50, y: 500 },
+        { type: "1", x: 150, y: 500 },
+        { type: "d", x: 50, y: 650 },
+        { type: "c", x: 150, y: 650 }
       ];
-      console.log(rects.length);
       // Draw the button GUI
       drawButtons();
-      // div = document.querySelector('#buttons');
-      // buttons = div.querySelectorAll('button');
-      // for (let i = 0; i < buttons.length; i++) {
-      //   buttons[i].addEventListener('click', function (e) {
-      //     if (Number(e.target.id) >= 0) {
-      //       activeColor = Number(e.target.id);
-      //     }
-      //     else if (e.target.id === "c") {
-      //       // Call clear logic
-      //       resetBoard();
-      //     }
-      //     else {
-      //       activePiece = e.target.id;
-      //       console.log(activePiece);
-      //     }
-      //   });
-      // }
+      // Hook up the submit button
       let temp = document.querySelector('#nameForm');
       temp.onsubmit = sendPost;
       setInterval(resetCanvas, 1000 / fps);
@@ -109,9 +125,11 @@
 
     }
 
+    // Draws the buttons GUI
     function drawButtons() {
       bctx.fillStyle = "lightgray";
       bctx.fillRect(0, 0, 300, 800);
+      // iterates through all the rects and draws them
       for (let i = 0; i < rects.length; i++) {
         if (Number(rects[i].type) >= 0) {
           bctx.fillStyle = ((Number(rects[i].type) === 0) ? "white" : "black");
@@ -123,6 +141,7 @@
       }
     }
 
+    // Checks mouse collision with GUI rects
     function checkBoxCollisions(canv, event) {
       // Get mouse x and y
       const rect = canv.getBoundingClientRect();
@@ -139,6 +158,12 @@
           if (Number(r.type) >= 0) {
             activeColor = Number(r.type);
           }
+          else if (r.type === 'd') {
+            activePiece = ' ';
+          }
+          else if (r.type === 'c') {
+            resetBoard();
+          }
           else {
             activePiece = r.type;
           }
@@ -146,6 +171,7 @@
       }
     }
 
+    // Handles Post response
     const handleResponse = (e) => {
       const xhr = e.target;
       const content = document.querySelector('h1');
@@ -169,12 +195,12 @@
 
       // make sure that something is in the .response property first!
       const obj = xhr.response && JSON.parse(xhr.response);
-      console.dir(obj);
       if (obj.id) {
         content.innerHTML += `<p>id = ${obj.id}</p><p>message =NULL</p>`;
       }
     };
 
+    // Sends a post request
     const sendPost = (e) => {
       console.log("Submit pressed");
       // "kill" the default behavior of the form (reloading the page it's on)
@@ -206,8 +232,6 @@
       }
 
       boardData = JSON.stringify(boardData);
-      console.log(boardData);
-
 
       const nameField = nameForm.querySelector("#nameField");
 
@@ -244,6 +268,12 @@
         case "p":
           context.drawImage(pieces, imgW / 6 * 5, color * pieces.height / 2, imgW / 6, imgW / 6, x, y, 100, 100);
           break;
+        case "d":
+          context.drawImage(delImg, 0, 0, delImg.width, delImg.height, x, y, 100, 100);
+          break;
+        case "c":
+          context.drawImage(clearImg, 0, 0, clearImg.width, clearImg.height, x, y, 100, 100);
+          break;
         default: // Board at location is empty
           break;
 
@@ -251,13 +281,13 @@
 
     }
 
-
+    // Adds piece to the underlying board array
     function addPiece(type, color, x, y) {
       board[x][y] = type + "" + color;
     }
 
+    // draws the board BACKGROUND
     function drawBoard(size) {
-      // console.log("drawBoard called");
       ctx.fillStyle = "white";
       let bit = false;
       for (let i = 0; i < 8; i++) {
@@ -268,8 +298,8 @@
       }
     }
 
+    // Draws the pieces from the underlying array
     function drawPieces() {
-      // console.log("drawPieces called");
       for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
           drawPiece((board[i][j])[0], Number((board[i][j])[1]), i * 100, j * 100, ctx)
@@ -277,8 +307,8 @@
       }
     }
 
+    // Resets and draws the canvas EVERY INTERVAL
     function resetCanvas() {
-      // console.log("ACTIVE PIECE: " + activePiece );
       ctx.clearRect(0, 0, 800, 800);
       ctx.fillStyle = "gray";
       ctx.fillRect(0, 0, width, height);
@@ -294,8 +324,9 @@
         mouseY - rect.top - (width / 16),
         ctx);
       ctx.globalAlpha = 1;
-      // console.log(mouseX + "," + mouseY);
     }
+
+    // Reset the underlying board array
     function resetBoard() {
       for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
@@ -307,15 +338,9 @@
     // Code adapted from online source:
     // https://stackoverflow.com/questions/55677/how-do-i-get-the-coordinates-of-a-mouse-click-on-a-canvas-element/18053642#18053642
     function getCursorPosition(canvas, event) {
-      const rect = canvas.getBoundingClientRect();
-      console.log(rect);
-      // let scaleX = canvas.width / rect.width;
-      // let scaleY = canvas.height / rect.height;
+      const rect = canvas.getBoundingClientRect();4
       const x = (event.clientX - rect.left);
-      console.log(event.clientX);
       const y = (event.clientY - rect.top);
-      console.log("x: " + Math.floor(x / 100) + " y: " + Math.floor(y / 100) + "," + activePiece + "," + activeColor);
-      console.log("ADDING PIECE:" + activePiece);
       addPiece(activePiece, activeColor, Math.floor(x / 100), Math.floor(y / 100));
     }
   </script>
@@ -333,27 +358,9 @@
         <a href="/admin.html">Admin</a>
 
     </nav>
-    <h1>CONTENT</h1>
+    <h1>Select a piece and click on the board to save a position!</h1>
   </header>
 
-  <div id="buttons" class="right">
-    <!-- <p>PIECES</p>
-    <button id="k">KING</button>
-    <button id="q">QUEEN</button>
-    <br>
-    <button id="r">ROOK</button>
-    <button id="b">BISHOP</button>
-    <br>
-    <button id="n">KNIGHT</button>
-    <button id="p">PAWN</button>
-    <br>
-    <button id="-">DELETE</button>
-    <button id="c">CLEAR</button>
-    <br>
-    <p>COLOR</p>
-    <button id="0">WHITE</button>
-    <button id="1">BLACK</button> -->
-  </div>
   <form id="nameForm">
     <label for="name">NAME</label>
     <input type="text" id="nameField" name="name">

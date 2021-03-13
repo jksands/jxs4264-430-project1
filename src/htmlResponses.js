@@ -8,6 +8,8 @@ const loadPage = fs.readFileSync(`${__dirname}/../client/load.html`);
 const savePage = fs.readFileSync(`${__dirname}/../client/save.html`);
 const adminPage = fs.readFileSync(`${__dirname}/../client/admin.html`);
 const pieces = fs.readFileSync(`${__dirname}/../client/pieces.png`);
+const del = fs.readFileSync(`${__dirname}/../client/del.png`);
+const clear = fs.readFileSync(`${__dirname}/../client/clear.png`);
 
 const get404Response = (request, response) => {
   response.writeHead(404, { 'Content-Type': 'text/html' }); // send response headers
@@ -44,6 +46,16 @@ const getImg = (request, response) => {
   response.write(pieces);
   response.end();
 };
+const getDelImg = (request, response) => {
+  response.writeHead(200, { 'Content-Type': 'text/html' });
+  response.write(del);
+  response.end();
+};
+const getClearImg = (request, response) => {
+  response.writeHead(200, { 'Content-Type': 'text/html' });
+  response.write(clear);
+  response.end();
+};
 
 module.exports.get404Response = get404Response;
 module.exports.getIndex = getIndex;
@@ -52,3 +64,5 @@ module.exports.getLoadPage = getLoadPage;
 module.exports.getSavePage = getSavePage;
 module.exports.getAdminPage = getAdminPage;
 module.exports.getImg = getImg;
+module.exports.getDelImg = getDelImg;
+module.exports.getClearImg = getClearImg;

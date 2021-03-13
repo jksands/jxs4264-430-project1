@@ -4,6 +4,15 @@
   <title>Chess Saver</title>
   <link href="default-styles.css" type="text/css" rel="stylesheet" />
   <style>
+    nav {
+      background-color: aliceblue;
+      font-size: 24;
+      margin: 10px;
+      padding: 10px;
+    }
+    nav a {
+      font-size: 24;
+    }
     canvas {
       margin: 10px;
       outline: 5px black solid;
@@ -87,8 +96,6 @@
     }
 
     const handleResponse = (e) => {
-      console.log("e.target = ", e.target); // e.target is `xhr` object
-      console.log("e.target.response =", e.target.response); // this is a string of "joke" JSON
       const obj = JSON.parse(e.target.response); // turn it back intp an object
       let output = document.querySelector("#output");
 
@@ -110,7 +117,6 @@
         }
         output.appendChild(canv);
       }
-      console.log(obj);
     };
   </script>
 </head>
@@ -128,9 +134,7 @@
       
     </nav>
   </header>
-
-  <p>Will show admin information...</p>
-  <p>Will likely just dump all the saved positions as raw JSON for debugging purposes</p>
+  <p>Here are all the positions saved on the server!</p>
   <div id="output"></div>
 
 </body>
